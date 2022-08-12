@@ -1,15 +1,17 @@
 class VkrcPoint:
 
-    def __init__(self, moveType, vb, ve, acc, robWzg, base, spsTrig):
+    def __init__(self, posX, posY, posZ, posA, posB, posC, acc, robWzg, base, spsTrig):
 
-        self.moveType = 'PTP'
-        self.vb = 100
-        self.ve = 0
-        self.acc = 100
-        self.robWzg = 0
-        self.base = 0
-        self.spsTrig = 0
+        self.posX = posX
+        self.posY = posY
+        self.posZ = posZ
+        self.posA = posA
+        self.posB = posB
+        self.posC = posC
+        self.acc = acc
+        self.robWzg = robWzg
+        self.base = base
+        self.spsTrig = spsTrig
 
-
-
+# Osobne klasy dla ruchu PTP i LIN - będą dziedziczyć po klasie VkrcPoint (otrzymają dodatkowe pola)
 
