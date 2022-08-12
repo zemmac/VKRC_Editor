@@ -16,3 +16,6 @@ class VkrcPoint:
 
     def __next__(self):
         pass
+    #comment
+
+
