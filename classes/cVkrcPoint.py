@@ -10,9 +10,6 @@ class VkrcPoint:
         self.base = 0
         self.spsTrig = 0
 
-    def __iter__(self):
-        self.startIteration = self.moveType
-        return self
 
-    def __next__(self):
-        pass
+
+
