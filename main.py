@@ -1,11 +1,8 @@
-from classes.cVkrcPoint import VkrcPoint
+from classes.cSrcReader import SrcReader
 
+path = 'C:\\Users\\ats\\PycharmProjects\\VKRC_Editor\\Dummy_Files\\up21.src'
 
-a = VkrcPoint(0, 0, 0, 0, 0, 0, 100, 0, 0, 0)
+a = SrcReader(path)
+a.OpenFile()
 
-
-
-a.setPosX('1414112312')
-print (a.getPosX())
-
-
+print(''.join([i.ShowInlineForm() for i in a.inlineFormList if i.ShowInlineForm()]))

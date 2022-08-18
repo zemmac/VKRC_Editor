@@ -1,18 +1,37 @@
 class VkrcPoint:
 
     # Init
-    def __init__(self, posX, posY, posZ, posA, posB, posC, acc, robWzg, base, spsTrig):
+    def __init__(self, pointNumber, posX, posY, posZ, posA, posB, posC, acc, robWzg, base, spsTrig,
+                 E1, E2, E3, E4, E5, E6):
 
-        self.posX = posX        # X cartesian coordinate
-        self.posY = posY        # Y cartesian coordinate
-        self.posZ = posZ        # Z cartesian coordinate
-        self.posA = posA        # A rotate coordinate (Rz)
-        self.posB = posB        # B rotate coordinate (Ry)
-        self.posC = posC        # C rotate coordinate (Rx)
-        self.acc = acc          # Acceleration (default: 100%)
-        self.robWzg = robWzg    # Robot tool number to reach this point
-        self.base = base        # Robot base number in which coordinates this point is defined
-        self.spsTrig = spsTrig  # SPSTrigger: 0 for via points, 5 for fine points
+        self.pointNumber = pointNumber  # Point number in current UP/Forge
+        self.posX = posX                # X cartesian coordinate
+        self.posY = posY                # Y cartesian coordinate
+        self.posZ = posZ                # Z cartesian coordinate
+        self.posA = posA                # A rotate coordinate (Rz)
+        self.posB = posB                # B rotate coordinate (Ry)
+        self.posC = posC                # C rotate coordinate (Rx)
+        self.acc = acc                  # Acceleration (default: 100%)
+        self.robWzg = robWzg            # Robot tool number to reach this point
+        self.base = base                # Robot base number in which coordinates this point is defined
+        self.spsTrig = spsTrig          # SPSTrigger: 0 for via points, 5 for fine points
+        self.E1 = E1                    # External axis E1 value
+        self.E2 = E2                    # External axis E2 value
+        self.E3 = E3                    # External axis E3 value
+        self.E4 = E4                    # External axis E4 value
+        self.E5 = E5                    # External axis E5 value
+        self.E6 = E6                    # External axis E6 value
+
+    # Setting pointNumber
+    def setPointNumber(self, pointNumber):
+        try:
+            self.pointNumber = int(pointNumber)
+        except ValueError:
+            pass
+
+    # Getting pointNumber
+    def getPointNumber(self):
+        return self.pointNumber
 
     # X
     # Setting point's X coordinate
@@ -118,5 +137,84 @@ class VkrcPoint:
     def getRobWzg(self):
         return self.robWzg
 
-# Osobne klasy dla ruchu PTP i LIN - będą dziedziczyć po klasie VkrcPoint (otrzymają dodatkowe pola)
+    #
+    # External Axes
+    #
+    # E1
+    # Setting E1 value
+    def setE1(self, E1):
+        # Check if it is float number. If not - do nothing
+        try:
+            self.E1 = float(E1)
+        except ValueError:
+            pass
+
+    # Getting E1 value
+    def getE1(self):
+        return self.E1
+
+    # E2
+    # Setting E2 value
+    def setE2(self, E2):
+        # Check if it is float number. If not - do nothing
+        try:
+            self.E2 = float(E2)
+        except ValueError:
+            pass
+
+    # Getting E2 value
+    def getE2(self):
+        return self.E2
+
+    # E3
+    # Setting E3 value
+    def setE3(self, E3):
+        # Check if it is float number. If not - do nothing
+        try:
+            self.E3 = float(E3)
+        except ValueError:
+            pass
+
+    # Getting E3 value
+    def getE3(self):
+        return self.E3
+
+    # E4
+    # Setting E4 value
+    def setE4(self, E4):
+        # Check if it is float number. If not - do nothing
+        try:
+            self.E4 = float(E4)
+        except ValueError:
+            pass
+
+    # Getting E4 value
+    def getE4(self):
+        return self.E4
+
+    # E5
+    # Setting E5 value
+    def setE5(self, E5):
+        # Check if it is float number. If not - do nothing
+        try:
+            self.E5 = float(E5)
+        except ValueError:
+            pass
+
+    # Getting E5 value
+    def getE5(self):
+        return self.E5
+
+    # E6
+    # Setting E6 value
+    def setE6(self, E6):
+        # Check if it is float number. If not - do nothing
+        try:
+            self.E6 = float(E6)
+        except ValueError:
+            pass
+
+    # Getting E6 value
+    def getE6(self):
+        return self.E6
 
