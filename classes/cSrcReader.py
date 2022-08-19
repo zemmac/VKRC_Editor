@@ -131,46 +131,30 @@ class SrcReader:
         inlineFormList.insert(0, defName)
         inlineFormList.insert(0, header)
 
-
         # We need to declare Motion folds, Comment folds and Anfang fold.
         # After that, replace list with a class object of each fold
         # So for example: list that contains Motion Fold is now object of class FoldMotion
         # The list is now in class object: inlineFormList[X] -> FoldMotion(X)
 
-
         for i in range(len(inlineFormList)):
             a = DefineFoldType(inlineFormList[i])
-            if a == 2:
-                inlineFormList[i] = FoldComment(inlineFormList[i])
-            elif a == 3:
+            if a == 2:                                                  # 2 - '--' - Comment
+                inlineFormList[i]: FoldComment = FoldComment(inlineFormList[i])
+            elif a == 3:                                                # 3 - Move instruction Fold
                 inlineFormList[i] = FoldMotion(inlineFormList[i])
-            elif a == 4:
+            elif a == 4:                                                # 4 - Empty line Fold
                 inlineFormList[i] = Fold(inlineFormList[i])
-            elif a == 5:
+            elif a == 5:                                                # 5 - Anfang Fold
                 inlineFormList[i] = FoldAnfang(inlineFormList[i])
-            else:
+            else:                                                       # just default Fold
                 inlineFormList[i] = Fold(inlineFormList[i])
 
-
-
-        # After above code, there is a list inlineFormList where all instruction for each Inline Form are stored
-        # One list index of inlineFormList is complete code stored as list - each line has its own index
-        # inLineFormList[0] - file header. Some useful elements like: comment
-        # inLineFormList[1] - definition of the main function name
-        # inlineFormList[2] - Anfang
-        # inlineFormList[-3] - ;FOLD ;%{H}
-        # inLineFormList[-2] - END
-        # inLineFormList[-1] - DEF SPS_TRIG
-        # From [2] element we need to just join every element for future file creation
-        # From [-3] and [-2] just pass to the future file
-        # From [-1] element we need to join every elementy for future file creation
-        # Rest elements are visible in VKRC and are needed for edit/take args etc. (we will pass them to class creation)
-        #
-
+        # Ready list of class objects.
         self.inlineFormList = inlineFormList
 
         return self.inlineFormList
 
+    # Defining file name according to function definition inside file
     def FileName(self):
         fileName = self.inlineFormList[1][0].replace('\n', '').replace('DEF ', '').replace('()', '')
         return fileName

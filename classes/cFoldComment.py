@@ -32,5 +32,3 @@ class FoldComment(Fold):
 
         return self.foldList
 
-
-
