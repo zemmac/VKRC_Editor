@@ -28,7 +28,7 @@ class FoldComment(Fold):
 
         self.foldList[0] = self.foldList[0].replace(f'-- {self.Comment} --', f'-- {newComment} --')
         self.foldList[0] = self.foldList[0].replace(f':, 2:{self.Comment}', f':, 2:{newComment}')
-        self.foldList[2] = self.foldList[2].replace(f'M_COMMENT("{self.Comment}', f'M_COMMENT("{newComment}')
+        self.foldList[1][1] = self.foldList[1][1].replace(f'M_COMMENT("{self.Comment}', f'M_COMMENT("{newComment}')
 
         return self.foldList
 

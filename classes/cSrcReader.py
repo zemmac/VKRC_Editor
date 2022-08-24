@@ -42,6 +42,7 @@ class SrcReader:
     def __init__(self, filePath):
         self.filePath = filePath
         self.inlineFormList = []
+        self.Name = ''
 
     def OpenFile(self):
         # Open file
@@ -68,6 +69,10 @@ class SrcReader:
         header = []
         # List for SRC Anfang instructions
         anfang = []
+        # List for fold {H} section. Separate each fold{H} as a new list
+        foldH = []
+        # Stack for Fold {H} section
+        HStack = []
         # List of Inline Forms with whole folds inside. Each index is full Inline Form instruction
         inlineFormList = []
         # Buffer list. Stored lines between fold-endfold before assign it to specific list
@@ -84,6 +89,7 @@ class SrcReader:
                 if 'def ' in i.lower():     # First DEF instruction in file. Useful to separate Anfang
                     defStack.append(i)      # Add line to stack (doesn't matter what to add)
                     defName.append(i)       # First DEF instruction defines the main function (file name).
+                    self.Name = defName[0].replace('DEF ', '').replace('()', '')[:-1]
                     endOfHeader = True      # First DEF instructions defines end of header section
                 # END instruction tells that this is end of DEF main function. Need exactly 'END' no more
                 if 'end' in i.lower() and len(i.replace('\n', '')) == 3:    # There is '\n' after 'END' so remove it
@@ -97,19 +103,31 @@ class SrcReader:
                     inlineFormList.append(bufferList)   # --
                     bufferList = []                     # Erase buffer
                 # Add folds to stack to separate motion instructions
-                if ' fold' in i.lower() or ';fold ' in i.lower():
+                if (' fold' in i.lower() or ';fold ' in i.lower()) and ';fold {h}' not in i.lower():
                     foldsStack.append(i)
 
+                if ';fold {h}' in i.lower():
+                    HStack.append(i)
+
                 if len(foldsStack) > 0:
-                    bufferList.append(i)
+                    if len(HStack) > 0:
+                        foldH.append(i)
+                    else:
+                        bufferList.append(i)
                 # When reach ENDFOLD, remove last input in stack
-                if 'endfold' in i.lower() and len(foldsStack) > 0:
+                if 'endfold' in i.lower() and len(foldsStack) > 0 and len(HStack) == 0:
                     foldsStack.pop()
                     # When after remove last input in stack, stack is empty, assign whole buffer to the list
                     if len(foldsStack) == 0:
                         inlineFormList.append(bufferList)
                         bufferList = []
                         del bufferList[:]
+
+                elif 'endfold' in i.lower() and len(foldsStack) > 0 and len(HStack) > 0:
+                    HStack.pop()
+                    bufferList.append(foldH)
+                    foldH = []
+                    del foldH[:]
 
                 # Separate file's Header
                 if not endOfHeader:
@@ -156,13 +174,13 @@ class SrcReader:
 
     # Defining file name according to function definition inside file
     def FileName(self):
-        fileName = self.inlineFormList[1][0].replace('\n', '').replace('DEF ', '').replace('()', '')
+
+        fileName = self.Name
         return fileName
 
     def SaveFile(self):
         fileName = self.FileName()
         checkFile = open(f'Output_Files/{fileName}.src', 'w')
-        checkFile.write(''.join(sum(self.inlineFormList, [])))
-
-
-
+        for i in self.inlineFormList:
+            i.saveFold()
+            checkFile.write(''.join(i.saveFold()))

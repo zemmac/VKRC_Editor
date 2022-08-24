@@ -1,27 +1,26 @@
-data ='    ;FOLD KLIN VB=7[mm/s] Genau=0[mm] ACC=100% RobWzg=1 Base=2 SPSTrig=5[1/100s] P ;' \
-       '%{P}%MKUKATPVW,%CMOVE8,%VKLIN,%P 1:4, 2: VB=, 3:7, 4:[mm/s], 5: Genau=, 6:0, 7:[mm], 8: ACC=, 9:100, ' \
-       '10:%, 11: RobWzg=, 12:1, 13: Base=, 14:2, 15: SPSTrig=, 16:5, 17:[1/100s], 18: P, 19:18, 20:-1, 21:16'
-dict={}
+class klasa:
+    def __init__(self, var1, var2):
+        self.var1 = var1
+        self.var2 = var2
 
-data = data.split(',')
-print(data)
+    def __str__(self):
+        return f'var1: {self.var1}, var2: {self.var2} '
+
+class klasa2(klasa):
+    def __init__(self, var1, var2):
+        super().__init__(var1, var2)
 
 
 
+a = klasa2(1,2)
+b = klasa2(3,4)
+c = klasa(5,6)
 
+lista = [a,b,c]
+lista2 = []
+for i in lista:
+    print(i)
+    lista2.append(i.__str__())
+glista = ''.join(lista2)
+print(glista)
 
-
-
-# data = data.split('%P ')
-#
-#
-# for name, val in [item.split(':') for item in data[1].split(",")]:
-#     dict[(name)] = val
-# print(dict)
-# string =' '
-# for item in dict:
-#     string += f'{item}:{dict[item]},'
-# print(string)
-#
-# a = ' '+''.join([f'{item}:{dict[item]},' for item in dict])
-# print(a)

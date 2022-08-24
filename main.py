@@ -12,11 +12,11 @@ ttt=[]
 #print(''.join([i.ShowInlineForm() for i in a.inlineFormList if i.ShowInlineForm()]))
 
 Br: FoldMotion = a.inlineFormList[11]
-print(Br.MotionType_1)
+print(Br.ShowInlineForm())
 a.inlineFormList[11].setMotionType('LIN')
-print(str(a.inlineFormList[11].MotionType_1))
 print(Br.ShowInlineForm())
-Br.setMotionType('KCIR')
-print(Br.ShowInlineForm())
+
+a.SaveFile()
+
 # ttt.append(Br.GenerateDictParserString())
 # print(ttt)

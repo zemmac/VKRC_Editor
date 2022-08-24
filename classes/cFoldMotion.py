@@ -1,4 +1,7 @@
 from classes.cFold import Fold
+import re
+
+from classes.cFoldLogicPLC import FoldLogicPLC
 
 
 class FoldMotion(Fold):
@@ -23,6 +26,9 @@ class FoldMotion(Fold):
                    3: '%',
                    4: '[mm]',
                    5: '[mm]'}
+
+    FoldLogicPLCRegex1 = re.compile(r';FOLD \d: ')
+    FoldLogicPLCRegex2 = re.compile(r';FOLD \d\d: ')
 
     def __init__(self, foldList):
         super().__init__(foldList)
@@ -51,6 +57,14 @@ class FoldMotion(Fold):
         self.PointNrP2_20 = self.dictParser[20]
         self.PointNrView_21 = self.dictParser[21]
 
+        for i in range(len(self.foldList)):
+            iter = self.foldList[i]
+            if ';FOLD ' in self.foldList[i]:
+                logicNumber = self.FoldLogicPLCRegex1.search(iter) or self.FoldLogicPLCRegex2.search(iter)
+                if logicNumber:
+                    self.foldList[i] = FoldLogicPLC(self.foldList[i])
+
+
     # ;FOLD KLIN VB=7[mm/s] Genau=0[mm] ACC=100% RobWzg=1 Base=2 SPSTrig=5[1/100s] P ;%{P}%MKUKATPVW,%CMOVE8,%VKLIN,
     #    %P 1:4, 2: VB=, 3:7, 4:[mm/s], 5: Genau=, 6:0, 7:[mm], 8: ACC=, 9:100, 10:%, 11: RobWzg=, 12:1,
     #    13: Base=, 14:2, 15: SPSTrig=, 16:5, 17:[1/100s], 18: P, 19:18, 20:-1, 21:16
@@ -65,29 +79,29 @@ class FoldMotion(Fold):
 
         return dictParser
 
-    # def setDictParser(self):
-    #
-    #     self.dictParser[1] = self.MotionType_1
-    #     self.dictParser[2] = self.SpeedLabel_2
-    #     self.dictParser[3] = self.SpeedValue_3
-    #     self.dictParser[4] = self.SpeedUnit_4
-    #     self.dictParser[5] = self.ApproxLabel_5
-    #     self.dictParser[6] = self.ApproxValue_6
-    #     self.dictParser[7] = self.ApproxUnit_7
-    #     self.dictParser[8] = self.AccLabel_8
-    #     self.dictParser[9] = self.AccValue_9
-    #     self.dictParser[10] = self.AccUnit_10
-    #     self.dictParser[11] = self.ToolLabel_11
-    #     self.dictParser[12] = self.ToolValue_12
-    #     self.dictParser[13] = self.BaseLabel_13
-    #     self.dictParser[14] = self.BaseValue_14
-    #     self.dictParser[15] = self.SPSTrigLabel_15
-    #     self.dictParser[16] = self.SPSTrigValue_16
-    #     self.dictParser[17] = self.SPSTrigUnit_17
-    #     self.dictParser[18] = self.LogicLabel_18
-    #     self.dictParser[19] = self.PointNrP1_19
-    #     self.dictParser[20] = self.PointNrP2_20
-    #     self.dictParser[21] = self.PointNrView_21
+    def setDictParser(self):
+
+        self.dictParser[1] = self.MotionType_1
+        self.dictParser[2] = self.SpeedLabel_2
+        self.dictParser[3] = self.SpeedValue_3
+        self.dictParser[4] = self.SpeedUnit_4
+        self.dictParser[5] = self.ApproxLabel_5
+        self.dictParser[6] = self.ApproxValue_6
+        self.dictParser[7] = self.ApproxUnit_7
+        self.dictParser[8] = self.AccLabel_8
+        self.dictParser[9] = self.AccValue_9
+        self.dictParser[10] = self.AccUnit_10
+        self.dictParser[11] = self.ToolLabel_11
+        self.dictParser[12] = self.ToolValue_12
+        self.dictParser[13] = self.BaseLabel_13
+        self.dictParser[14] = self.BaseValue_14
+        self.dictParser[15] = self.SPSTrigLabel_15
+        self.dictParser[16] = self.SPSTrigValue_16
+        self.dictParser[17] = self.SPSTrigUnit_17
+        self.dictParser[18] = self.LogicLabel_18
+        self.dictParser[19] = self.PointNrP1_19
+        self.dictParser[20] = self.PointNrP2_20
+        self.dictParser[21] = self.PointNrView_21
 
     def GenerateDictParserString(self):
         a = ' ' + ' '.join([f'{item}:{self.dictParser[item]},' for item in self.dictParser])[:-1]
@@ -99,17 +113,39 @@ class FoldMotion(Fold):
 
     def setMotionType(self, newMotionType: str):
 
+        oldMotionType = self.motionTypes[int(self.MotionType_1)]
+        oldDictParserString = self.GenerateDictParserString()
+        oldInlineFormString = self.ShowInlineForm()
+
+        # Change parameters according to new Motion Type
         self.MotionType_1 = [key for key, value in self.motionTypes.items() if value == newMotionType][0]
         self.SpeedUnit_4 = [value for key, value in self.speedUnits.items() if key == self.MotionType_1][0]
         self.ApproxLabel_5 = [value for key, value in self.approxLabels.items() if key == self.MotionType_1][0]
         self.ApproxUnit_7 = [value for key, value in self.approxUnits.items() if key == self.MotionType_1][0]
 
-        self.ShowInlineForm()
-        print(self.foldList[0])
+        # Generate new DictParser (according to new parameters of Motion Type variables)
+        self.setDictParser()
 
-    def UpdateFoldList(self):
+        # In foldList[0] change:
+        # 1. motion variable according to new one (example: from PTP to KLIN - (...),%VPTP,(...) -> (...),%VKLIN,(...))
+        # 2. all old fold parameters (oldDictParserString) into new one (use GenerateDictParserString())
+        # 3. MoveType string in Inline Form into new one
 
-        pass
+        self.foldList[0] = self.foldList[0].replace(f'%V{oldMotionType}',
+                                                    f'%V{self.motionTypes[int(self.MotionType_1)]}')\
+                                           .replace(f',%P{oldDictParserString}',
+                                                    f',%P{self.GenerateDictParserString()}')\
+                                           .replace(f';FOLD {oldInlineFormString}',
+                                                    f';FOLD {self.ShowInlineForm()}')
+
+        # Change as well the motion type in FOLD {H} section
+        # 1. find the index of list parameter where the motion type variable is stored in FOLD {H}
+        # 2. Replace old motion type with the new one
+        ind = [i for i in range(len(self.foldList[-2])) if oldMotionType in self.foldList[-2][i]]
+        self.foldList[-2][ind[0]] = self.foldList[-2][ind[0]].replace('PTP',
+                                                                      f'{self.motionTypes[int(self.MotionType_1)]}')
+
+        return self.foldList
 
     def ShowInlineForm(self):
 
@@ -144,7 +180,6 @@ class FoldMotion(Fold):
                  toolBuffer + \
                  baseBuffer + \
                  spstrigBuffer + \
-                 logicBuffer + '\n'
+                 logicBuffer
 
         return buffer
-
